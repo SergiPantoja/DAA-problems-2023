@@ -6,7 +6,7 @@ Por otro lado, las vueltas de la vida han llevado a Lázaro a volverse president
 
 Sea $A$ una cadena con enteros entre 1 y 8. Cada índice representa un chisme de la libreta (en el mismo orden en que aparece) y cada valor representa el tipo de chisme asociado a este. Además, la cadena $S$ representa el subconjunto que Lázaro quiere conocer.
 
-- Para cada par de tipos de chismes $t_1$, $t_2$ distintos, La cantidad de chismes de tipo $t_1$ en $S$ puede diferir de la cantidad de chismes de tipo $t_2$ en no más de 1 elemento.
+- Para cada par de tipos de chismes $t_1$, $t_2$ distintos, la cantidad de chismes de tipo $t_1$ en $S$ puede diferir de la cantidad de chismes de tipo $t_2$ en no más de 1 elemento.
 - Si un chisme de tipo $t$ aparece en $S$, todos los chismes de tipo $t$ de $S$ deben formar un segmento continuo. Estos chismes no son necesariamente continuos en la cadena $A$.
 
 Para ayudar a Lázaro y Sheyla, reciba la cadena $A$ representando a la libreta, y calcule el tamaño de la mayor cadena $S$ posible.
