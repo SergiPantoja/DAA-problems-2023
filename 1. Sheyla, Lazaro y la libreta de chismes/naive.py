@@ -62,17 +62,3 @@ def _naive_recursive(A:str, subsecuences:set, secuence:str) -> set:
     _naive_recursive(A[1:], subsecuences, secuence)
 
     return subsecuences
-
-
-if __name__ == "__main__":
-    print("longest: ", naive("32277188744365566"))
-    print("\n\n")
-    print("longest2: ", naivito("32277188744365566"))
-
-    print("longest: ", naive("12233456788232"))
-    print("\n\n")
-    print("longest2: ", naivito("12233456788232"))
-
-    print("longest: ", naive("135421784671"))
-    print("\n\n")
-    print("longest2: ", naivito("135421784671"))
