@@ -64,9 +64,64 @@ def _naive_recursive(A:str, subsecuences:set, secuence:str) -> set:
     return subsecuences
 
 
+def naivito(A:str) -> int:
+
+    s =  _naivito_recursive(A, set(), "", [False for i in range(8)], [0 for i in range(8)])
+
+    max = 0
+    longest = ""
+    for subsecuence in s:
+        if len(subsecuence) > max:
+            max = len(subsecuence)
+            longest = subsecuence
+
+    print("longest: ", longest)
+    return len(longest)
+
+def _naivito_recursive(A:str, s:set, secuence_curr:str, types:[bool], count:[int]) -> str:
+    """ lo mismo pero si es una subsecuencia invalida poda """
+
+    if len(A) == 0:
+        for i in range(len(count)):
+            for j in range(i+1, len(count)):
+                if abs(int(count[i]) - int(count[j])) > 1:
+                    return
+        #if len(secuence_curr) > len(longest):
+        #    longest = secuence_curr
+        s.add(secuence_curr)
+        return
+
+    
+    if types[int(A[0]) - 1]:  #if the character has already appeared
+        first_appearance = False
+        if (A[0] != secuence_curr[-1]):  #if the character is not consecutive
+            s.add(secuence_curr)
+            return     
+    else:
+        types[int(A[0]) - 1] = True
+        first_appearance = True
+    count[int(A[0]) - 1] += 1
+    _naivito_recursive(A[1:], s, secuence_curr + A[0], types, count)
+
+    count[int(A[0]) - 1] -= 1
+    if first_appearance:
+        types[int(A[0]) - 1] = False
+        first_appearance = False
+    _naivito_recursive(A[1:], s, secuence_curr, types, count)
+
+    return s
+
+
 
 if __name__ == "__main__":
-    print("longest: ", naive("123"))
+    print("longest: ", naive("32277188744365566"))
+    print("\n\n")
+    print("longest2: ", naivito("32277188744365566"))
 
+    print("longest: ", naive("12233456788232"))
+    print("\n\n")
+    print("longest2: ", naivito("12233456788232"))
 
-
+    print("longest: ", naive("135421784671"))
+    print("\n\n")
+    print("longest2: ", naivito("135421784671"))
