@@ -83,8 +83,6 @@ total = 0
 
 def Variations(A, mid, permutation):
     global total
-    if(permutation == [3,2,7,5,1,6,8,4]):
-        a=5
     n = [mid, mid + 1]
     m = [-1 for i in range(8)]
     max = [-1]
