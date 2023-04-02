@@ -26,11 +26,11 @@ def optimal(A:str) -> int:
     constraints"""
     #O(8! * n * log(n))
     
-    count = NotAll(A) #Si no hay al menos una ocurrencia de cada elemento, la solucion es 8 menos los que no estan
+    count = _not_all(A) #Si no hay al menos una ocurrencia de cada elemento, la solucion es 8 menos los que no estan
     if(count != -1):
         return count
     
-    minimum = Minimum(A)
+    minimum = _minimum(A)
     # 8! permutaciones de los 8 tipos de chismes
     p = permutations([1, 2, 3, 4, 5, 6, 7, 8])
 
@@ -40,16 +40,14 @@ def optimal(A:str) -> int:
 
     return S
 
-def Minimum(arr): #O(n)
+def _minimum(arr): #O(n)
     dic = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0}
     for i in arr:
         dic[i] += 1
-        
-    dif = [dic[i] for i in dic]
     
-    return min(dif)
+    return min(dic.values())
 
-def NotAll(arr): #O(n)
+def _not_all(arr): #O(n)
     count = 0
     dic = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0}
     for i in arr:
