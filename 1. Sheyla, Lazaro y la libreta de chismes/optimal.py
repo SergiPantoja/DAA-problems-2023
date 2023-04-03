@@ -41,6 +41,7 @@ def optimal(A:str) -> int:
     return S
 
 def _minimum(arr): #O(n)
+    """Returns the frequency of the element that appears less"""
     dic = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0}
     for i in arr:
         dic[i] += 1
@@ -48,6 +49,7 @@ def _minimum(arr): #O(n)
     return min(dic.values())
 
 def _not_all(arr): #O(n)
+    """si no hay al menos 1 ocurrencia de cada elemento devuelve cuantos hay"""
     count = 0
     dic = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0}
     for i in arr:
@@ -84,10 +86,11 @@ def Variations(A, mid, permutation):
     n = [mid, mid + 1]
     m = [-1 for i in range(8)]
     max = [-1]
-    VariationsWR(n,m,0, A, mid, permutation, max)
+    VariationsWR(n,m,0, A, permutation, max)
     return max[0]
     
-def VariationsWR(n, m, pos, A, mid, permutation, max):
+def VariationsWR(n, m, pos, A, permutation, max):
+    """por cada forma de poner los elementos de n en m ejecuta el greedy"""
     global total
     if(pos == len(m)):
         maxAct = _greedy(A, m, permutation)
@@ -100,9 +103,10 @@ def VariationsWR(n, m, pos, A, mid, permutation, max):
     else:
         for i in range(len(n)):
             m[pos] = n[i]
-            VariationsWR(n, m, pos + 1, A, mid, permutation, max)
+            VariationsWR(n, m, pos + 1, A, permutation, max)
     
-def _greedy(A:str, m:list, permutation:list): # -> (bool, int):
+def _greedy(A:str, m:list, permutation:list) -> int:
+    '''para cada elemento de m ver si se puede tomar esa cantidad de elementos en A dado la permutacion actual'''
     # O(n)
     curr = 0
     count = 0
