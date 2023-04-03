@@ -1,64 +1,56 @@
+from itertools import combinations
 
-def satisfies_constraints(subsecuence:str) -> bool:
-    #O(n), where n is the length of the subsecuence
+def Combinations(arr):
+    comb = []
+    for i in range(len(arr)):
+        comb.append(combinations(arr, i+1))
+    return comb
 
-    types = [False for i in range(8)]
-    count = [0 for i in range(8)]
-
-    for i in range(len(subsecuence)):
-        count[int(subsecuence[i]) - 1] += 1
-        if types[int(subsecuence[i]) - 1]:   #if the character has already appeared
-            if (subsecuence[i] != subsecuence[i - 1]):   #if the character is not consecutive
-                #print("no es consecutivo", subsecuence[i], subsecuence[i - 1], subsecuence)
-                return False
-        else:
-            types[int(subsecuence[i]) - 1] = True
-
-    #tiempo constante O(8*8)   
-    for i in range(len(count)):
-        for j in range(i+1, len(count)):
-            if abs(int(count[i]) - int(count[j])) > 1:
-                #print("no cumple la cantidad", i+1, j+1, count)
-                return False
-
+def Difference(arr):
+    dic = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0}
+    for i in arr:
+        dic[i] += 1
+        
+    dif = [dic[i] for i in dic]
+    
+    if(max(dif) - min(dif) > 1):
+        return False
     return True
 
+def Sets(arr):
+    dic = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0}
+    for i in arr:
+        dic[i] += 1
+    for i in range(len(arr)-1):
+        dic[arr[i]] -= 1
+        if(arr[i] != arr[i+1] and dic[arr[i]] > 0):
+            return False
+    return True
 
-def naive(A:str) -> int:
-    """Naive solution, find all posible subsecuences and return the size of 
-    the longest that satisfies the constraints"""
-    #O(2^n * n)
+def NotAll(arr):
+    count = 0
+    dic = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0}
+    for i in arr:
+        dic[i] += 1
+    for i in dic:
+        if(dic[i] > 0):
+            count += 1
+    if(count == 8):
+        return -1
+    return count
 
-    subsecuences = (_naive_recursive(A, set(), "")) #O(2^n)
-    #print("subsecuences: ", len(subsecuences), subsecuences)
-
+def Naive(arr):
+    count = NotAll(arr)
+    if(count != -1):
+        return count
+    combs = Combinations(arr)
+    result = []
     max = 0
-    longest = ""
-    #2^n subsecuences de a lo sumo longitud n donde n es la longitud de A
-    #O(n) satisfies_constraints
-    #O(2^n * n)
-    for subsecuence in subsecuences:
-        if satisfies_constraints(subsecuence):
-            if len(subsecuence) > max:
-                max = len(subsecuence)
-                longest = subsecuence
-    
-    print("longest: ", longest)
-    return max
-
-def _naive_recursive(A:str, subsecuences:set, secuence:str) -> set:
-
-    #O(2^n), len(A) = n
-    #Estamos generando todas las subsecuencias en un str the longitud n, esto
-    #es conjunto potencia de n, que es 2^n
-    #annadir a un set es O(1) amortizado???
-
-    if len(A) == 0:
-        subsecuences.add(secuence)
-        #print(secuence)
-        return
-    
-    _naive_recursive(A[1:], subsecuences, secuence + A[0])
-    _naive_recursive(A[1:], subsecuences, secuence)
-
-    return subsecuences
+    for i in range(len(combs)-1, 0, -1):
+        for j in list(combs[i]):
+            if(len(j) < max):
+                return result
+            if(Sets(j) and Difference(j)):
+                max = len(j)
+                result.append(j)
+    return result
