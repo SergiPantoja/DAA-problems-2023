@@ -2,17 +2,19 @@
 # - Fijamos una permutacion de los 8 tipos de chismes
 # - Por cada permutacion hacemos busqueda binaria en x donde x es el valor de la
 # frecuencia de cada chisme/longitud de los segmentos continuos minima tal que
-# se forme una subsecuencia donde las frecuencias sean x o x+1
-# - Para cada x, realizamos greedy o dp para encontrar si existe una subsecuencia
-# (si existe ya cumple con las restricciones pues tomo los segmentos continuos
-# y cada chisme aparece x o x+1 veces). Si existe tomamos la longitud de la mayor
-# (greedy siempre me va a dar la mayor) y la guardamos. Luego continuamos 
-# busqueda binaria hacia la derecha/arriba para ver si existe una subsecuencia
-# con mayor longitud (x mas grande). Si no existe, continuamos busqueda binaria
-# hacia la izquierda/abajo para ver si existe una subsecuencia con menor longitud
-# (x mas chico). Si no existe, no existe subsecuencia que cumpla con las
-# restricciones y continuamos con la siguiente permutacion. Siempre existe
-# tomando x = 0.
+# se forme una subsecuencia donde las frecuencias sean x o x+1. Para esto
+# buscamos el elemento que menos se repite y su frecuencia es r, hacemos busqueda
+# binaria en el intervalo [0, r+1].
+# - Para cada x, ejecutamos _find para cada forma de tomar x o x+1 de cada
+# elemento (2^8) para encontrar si existe una subsecuencia (si existe ya cumple 
+# con las restricciones pues tomo los segmentos continuos y cada chisme aparece
+# x o x+1 veces). Si existe tomamos la longitud de la mayor y la guardamos. 
+# Luego continuamos busqueda binaria hacia la derecha para ver si existe una 
+# subsecuencia con mayor longitud (x mas grande). Si no existe, continuamos 
+# busqueda binaria hacia la izquierda para ver si existe una subsecuencia con 
+# menor longitud (x mas chico). Si no existe, no existe subsecuencia que cumpla 
+# con las restricciones y continuamos con la siguiente permutacion (Aunque 
+# siempre existe tomando x = 0).
 # - Al finalizar la busqueda binaria tenemos la longitud de la subsecuencia mas
 # larga para la permutacion actual (o sea con los valores ordenados de acuerdo
 # a la permutacion). Nos quedamos con la mayor longitud de todas las permutaciones.
@@ -24,7 +26,7 @@ from itertools import permutations
 def optimal(A:str) -> int:
     """Optimal solution, find the longest subsecuence that satisfies the
     constraints"""
-    #O(8! * n * log(n))
+    #O(8! * 2^8 * n * log(n))
     
     count = _not_all(A) #Si no hay al menos una ocurrencia de cada elemento, la solucion es 8 menos los que no estan
     if(count != -1):
@@ -41,7 +43,7 @@ def optimal(A:str) -> int:
     return S
 
 def _minimum(arr): #O(n)
-    """Returns the frequency of the element that appears less"""
+    """ Retorna la cantidad minima de ocurrencias del elemento que menos aparece"""
     dic = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0}
     for i in arr:
         dic[i] += 1
@@ -69,7 +71,7 @@ def _binary_search(A:str, left:int, right:int, permutation:list) -> int:
     while left < right:
         mid = (left + right) // 2
 
-        length = Variations(A, mid, permutation)   #O(n)
+        length = _variations(A, mid, permutation)   #O(n)
 
         if length != -1:
             left = mid + 1
@@ -79,21 +81,23 @@ def _binary_search(A:str, left:int, right:int, permutation:list) -> int:
     
     return max_length
 
+
 total = 0
 
-def Variations(A, mid, permutation):
+def _variations(A, mid, permutation):
     global total
     n = [mid, mid + 1]
     m = [-1 for i in range(8)]
     max = [-1]
-    VariationsWR(n,m,0, A, permutation, max)
+    _variationsWR(n,m,0, A, permutation, max)
     return max[0]
     
-def VariationsWR(n, m, pos, A, permutation, max):
-    """por cada forma de poner los elementos de n en m ejecuta el greedy"""
+def _variationsWR(n, m, pos, A, permutation, max):
+    """por cada forma de poner los elementos de n en m ejecuta el find"""
+    #O(2^8)
     global total
     if(pos == len(m)):
-        maxAct = _greedy(A, m, permutation)
+        maxAct = _find(A, m, permutation)
         if(maxAct > max[0]):
             max[0] = maxAct
         total +=1
@@ -103,9 +107,9 @@ def VariationsWR(n, m, pos, A, permutation, max):
     else:
         for i in range(len(n)):
             m[pos] = n[i]
-            VariationsWR(n, m, pos + 1, A, permutation, max)
+            _variationsWR(n, m, pos + 1, A, permutation, max)
     
-def _greedy(A:str, m:list, permutation:list) -> int:
+def _find(A:str, m:list, permutation:list) -> int:
     '''para cada elemento de m ver si se puede tomar esa cantidad de elementos en A dado la permutacion actual'''
     # O(n)
     curr = 0
