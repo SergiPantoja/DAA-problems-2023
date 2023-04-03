@@ -26,14 +26,40 @@ def optimal(A:str) -> int:
     constraints"""
     #O(8! * n * log(n))
     
+    count = NotAll(A) #Si no hay al menos una ocurrencia de cada elemento, la solucion es 8 menos los que no estan
+    if(count != -1):
+        return count
+    
+    minimum = Minimum(A)
     # 8! permutaciones de los 8 tipos de chismes
     p = permutations([1, 2, 3, 4, 5, 6, 7, 8])
 
     S = 0
     for permutation in p:   #O(8!)
-        S = max(S, _binary_search(A, 0, len(A), permutation))  #O(log(n)) len(A) // 8
+        S = max(S, _binary_search(A, 0, minimum + 1, permutation))  #O(log(n)) len(A) // 8
 
     return S
+
+def Minimum(arr): #O(n)
+    dic = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0}
+    for i in arr:
+        dic[i] += 1
+        
+    dif = [dic[i] for i in dic]
+    
+    return min(dif)
+
+def NotAll(arr): #O(n)
+    count = 0
+    dic = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '7':0, '8':0}
+    for i in arr:
+        dic[i] += 1
+    for i in dic:
+        if(dic[i] > 0):
+            count += 1
+    if(count == 8):
+        return -1
+    return count
 
 def _binary_search(A:str, left:int, right:int, permutation:list) -> int:
     """Binary search for the optimal value of x"""
@@ -43,55 +69,57 @@ def _binary_search(A:str, left:int, right:int, permutation:list) -> int:
     while left < right:
         mid = (left + right) // 2
 
-        exists, length = _greedy(A, mid, permutation)   #O(n)
+        length = Variations(A, mid, permutation)   #O(n)
 
-        if exists:
+        if length != -1:
             left = mid + 1
             max_length = max(max_length, length)
         else:
             right = mid
     
     return max_length
+
+total = 0
+
+def Variations(A, mid, permutation):
+    global total
+    if(permutation == [3,2,7,5,1,6,8,4]):
+        a=5
+    n = [mid, mid + 1]
+    m = [-1 for i in range(8)]
+    max = [-1]
+    VariationsWR(n,m,0, A, mid, permutation, max)
+    return max[0]
     
-
-
-def _greedy(A:str, x:int, permutation:list) -> tuple[bool, int]:
-    # O(n)
-    
-    total_length = 0
-    segment_length = 0
-    curr = 0
-    for i in range(len(A)):
-        if int(A[i]) == permutation[curr]:      # Si estoy sobre el valor q toca
-            segment_length += 1                 # Sumo 1 a la longitud del segmento correspondiente a ese valor
-            if segment_length == x + 1:         # Ya no puedo tomar mas valores de ese tipo
-                curr += 1                       # Paso al siguiente tipo de chisme
-                if curr == len(permutation):    # Si ya termine de tomar todos los tipos de chismes
-                    total_length += segment_length
-                    return True, total_length  # Devuelvo la longitud de la subsecuencia
-                    break
-                total_length += segment_length
-                segment_length = 0
-
-        elif int(A[i]) != permutation[curr]:    # Si estoy sobre un valor que no toca
-            if segment_length < x:              # Si el segmento no llego a la longitud minima
-                continue                        # Sigo buscando mas elementos del mismo tipo
-            else:   # x o x+1 elementos del tipo actual
-                # Si no es el ultimo tipo de chisme y estoy sobre el siguiente tipo de chisme
-                if (curr != len(permutation) - 1) and (int(A[i]) == permutation[curr + 1]):
-                    curr += 1                       # Paso al siguiente tipo de chisme, que es en el que estoy
-                    total_length += segment_length
-                    segment_length = 1
-                else:
-                    # tenemos >= x elementos del tipo actual.
-                    # 1. Estamos sobre un valor que no es el tipo actual ni el siguiente
-                    # 2. Estamos sobre el ultimo tipo curr == len(permutation) - 1
-                    # En cualquier caso sigo buscando un posible elemento x+1 del tipo actual
-                    # o el primer elemento del siguiente tipo
-                    continue
-        
-    if (curr == len(permutation) - 1) and segment_length >= x:
-        total_length += segment_length
-        return True, total_length
+def VariationsWR(n, m, pos, A, mid, permutation, max):
+    global total
+    if(pos == len(m)):
+        maxAct = _greedy(A, m, permutation)
+        if(maxAct > max[0]):
+            max[0] = maxAct
+        total +=1
+        if(total == 2**8):
+            total=0
+            return
     else:
-        return False, 0
+        for i in range(len(n)):
+            m[pos] = n[i]
+            VariationsWR(n, m, pos + 1, A, mid, permutation, max)
+    
+def _greedy(A:str, m:list, permutation:list): # -> (bool, int):
+    # O(n)
+    curr = 0
+    count = 0
+    totl = 0
+    for i in range(len(A)):
+        if(int(A[i]) == permutation[curr]):
+            count +=1
+            if(count == m[curr]):
+                curr += 1
+                totl += count
+                if(curr == len(permutation) and count == m[curr-1]):
+                    return totl
+                count = 0
+    if(curr != len(permutation)):
+        return -1
+    return totl
