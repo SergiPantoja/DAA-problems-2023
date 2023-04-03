@@ -55,7 +55,7 @@ def _binary_search(A:str, left:int, right:int, permutation:list) -> int:
     
 
 
-def _greedy(A:str, x:int, permutation:list) -> (bool, int):
+def _greedy(A:str, x:int, permutation:list) -> tuple[bool, int]:
     # O(n)
     
     total_length = 0
