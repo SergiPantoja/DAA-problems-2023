@@ -321,7 +321,7 @@ def _binary_search(A:str, left:int, right:int, permutation:list) -> int:
     return max_length
 ```
 
-$(2)$ En el momento que se tenga fijada una permutación, hay que probar si se puede construir la subsecuencia máxima tal que todos los conjuntos de la solución tengan como cardinalidad mínima a $x$ y máxima a $x + 1$ (Esta corresponde a la misma 𝑥 que en el ejemplo anterior, y más adelante se explica cómo lograr esto), en caso de no existir solución válida para estos valores, hay que disminuir el valor de $x$ en 1 y volver a probar, esta sería una búsqueda común en un ciclo disminuyendo en 1 por cada iteración mientras la condición no se cumpla. Esta solución es $O(n * k)$ donde $k$ es el costo de obtener la máxima subsecuencia que se está buscando. 
+$(2)$ En el momento que se tenga fijada una permutación, hay que probar si se puede construir la subsecuencia máxima tal que todos los conjuntos de la solución tengan como cardinalidad mínima a $x$ y máxima a $x + 1$ (Esta corresponde a la misma $𝑥$ que en la explicación anterior, y más adelante se explica cómo lograr esto), en caso de no existir solución válida para estos valores, hay que disminuir el valor de $x$ en 1 y volver a probar, esta sería una búsqueda común en un ciclo disminuyendo en 1 por cada iteración mientras la condición no se cumpla. Esta solución es $O(n * k)$ donde $k$ es el costo de obtener la máxima subsecuencia que se está buscando. 
 
 $(3)$  Una solución más interesante seria aplicar búsqueda binaria sobre este valor de $x$, ya que es la forma mas eficiente y es perfectamente adaptable a esta situación.
 
@@ -341,7 +341,7 @@ Sea $m$ el valor tomado como $mid$ en la búsqueda binaria
 
 - Si no podemos construir ninguna subsecuencia válida, tampoco se podrá con un valor mayor que $m$, entonces se debe probar en el intervalo $[l, m]$ y disminuir $m$ (el mid de este nuevo intervalo), ya que hay un valor menor para el cuál existe $S$. Para 0 siempre existe pues siempre puedo crear una secuencia válida tomando 1 vez cada elemento diferente que aparece en $A$. 
 
-La complejidad de esto es la complejidad de una búsqueda binaria $O(logn)$ 
+La complejidad de esto es la complejidad de una búsqueda binaria $O(logn * k)$ donde $k$ es el costo de obtener la máxima subsecuencia que se está buscando 
 
 Luego de tener fijada una permutación y el valor mínimo hay que obtener para cada subconjunto de la solución cual es el valor máximo de cardinalidad que puede tener. Es decir cuál es la frecuencia máxima que puede tener cada elemento en $S$.
 
@@ -398,6 +398,36 @@ Luego por cada una ver si a partir de la lista original, la permutación y la va
 
 Luego de hacer esto para todas las posibles variaciones, la que cumpla las condiciones y su suma sea la mayor, es la mejor solucion para la permutación y valor de minimo  prefijados. Con la búsqueda binaria se obtiene esto para el mayor valor de frecuencia $x$ y tendríamos $S_p$ la subsecuencia más larga que cumple con las restricciones donde los elementos aparecen en el orden dado por la permutación $p$ con $1 \le p \le 8!$.
 
-El tamaño de la subsecuencia $S$ es el tamaño de la mayor subsecuencia $S_p$.
+El tamaño de la subsecuencia $S$ es $max(S_p)   \forall p \in P$ donde $P$ es el conunto de todas las permutaciones y $S_p$ es la maxima subsecuencia tomando el orden $p$. Esto es lo que hace el metodo principal del programa, el cual es:
 
+```python
+def optimal(A:str) -> int:
+    """Optimal solution, find the longest subsecuence that satisfies the
+    constraints"""
+    #O(8! * 2^8 * n * log(n))
+    
+    count = _not_all(A) #Si no hay al menos una ocurrencia de cada elemento, la solucion es 8 menos los que no estan
+    if(count != -1):
+        return count
+    
+    minimum = _minimum(A)
+    # 8! permutaciones de los 8 tipos de chismes
+    p = permutations([1, 2, 3, 4, 5, 6, 7, 8])
 
+    S = 0
+    for permutation in p:   #O(8!)
+        S = max(S, _binary_search(A, 0, minimum + 1, permutation))  #O(log(n)) len(A) // 8
+
+    return S
+```
+La complejidad temporal de este algoritmo es:
+
+-Generar permutaciones: $8!$
+
+-Para cada permutacion realizar búsqueda binaria buscando el mejor valor mínimo: $8! * log n$
+
+-Para cada valor de mínimo de la búsqueda binaria se generan todas las variaciones de 2 en 8 y por cada una se recorre la lista para verificar si se puede encontrar solución: $2^8 * n$
+
+Por todo lo antes dicho el algoritmo es:
+
+$O(8! * logn * 2^8 * n) = O(n*logn)$
