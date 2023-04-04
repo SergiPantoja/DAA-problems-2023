@@ -424,7 +424,7 @@ La complejidad temporal de este algoritmo es:
 
 -Generar permutaciones: $8!$
 
--Para cada permutacion realizar búsqueda binaria buscando el mejor valor mínimo: $8! * log n$
+-Para cada permutacion realizar búsqueda binaria buscando el mejor valor mínimo: $log n$
 
 -Para cada valor de mínimo de la búsqueda binaria se generan todas las variaciones de 2 en 8 y por cada una se recorre la lista para verificar si se puede encontrar solución: $2^8 * n$
 
