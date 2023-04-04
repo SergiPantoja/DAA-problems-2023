@@ -1,6 +1,6 @@
 # Diseño y Análisis de Algoritmos
-## Sergio Pérez Pantoja - C311
-## Kevin Talavera Díaz - C311
+## Sergio Pérez Pantoja - C411
+## Kevin Talavera Díaz - C411
 
 <br>
 
@@ -114,7 +114,7 @@ Demostración:
 
 - Luego, como $S$ es subsecuencia de $A$ tiene todos los números del 1 al 8 (excepto en el caso donde uno o más números no aparezcan en $A$) y al tomar cada uno en el orden en que aparecen esta lista es una permutación de [1, 2, 3, 4, 5, 6, 7, 8] que por definición $=> p' \in P$ por tanto tenemos una contradicción por lo que tomando la primera aparición de cada elemento diferente de $S$ obtenemos una permutación que pertenece a $P$.
 
-- En el caso que no aparezca uno o más números en $A$ entonces $S$ es una secuencia donde aparece cada elemento diferente de $A$ solo una vez. [1]
+- En el caso que no aparezca uno o más números en $A$ entonces $S$ es una secuencia donde aparece cada elemento diferente de $A$ solo una vez. $(1)$
 
 - Como el algoritmo encuentra la secuencia más larga con los segmentos contiguos ordenados según cada permutación para todas las permutaciones de $P$, va a encontrar a $S$.
 
@@ -214,7 +214,7 @@ def NotAll(arr):
     return count
 ```
 
-Este método verifica si cada número del 1 al 8 aparece al menos una vez en la lista de entrada, ya que en caso de no ser así, en la lista de resultado solo podrá existir a lo sumo 1 de cada número que este en la entrada y el resultado seria 8 − 𝑥 donde 𝑥 es la cantidad de números del 1 al 8 que no aparecen. Este método es $O(n + 8) = O(n)$
+(1) Este método verifica si cada número del 1 al 8 aparece al menos una vez en la lista de entrada, ya que en caso de no ser así, en la lista de resultado solo podrá existir a lo sumo 1 de cada número que este en la entrada y el resultado seria 8 − 𝑥 donde 𝑥 es la cantidad de números del 1 al 8 que no aparecen. Este método es $O(n + 8) = O(n)$
 
 - Condición 4:
 
@@ -276,7 +276,7 @@ def _not_all(arr): #O(n)
         return -1
     return count
 ```
-Si en la lista de entrada no existe al menos una ocurrencia de cada elemento, al igual que en la solución por combinatoria el resultado es tomar un elemento por cada uno que aparece, y este es el mejor caso y se resuelve en 𝑂(𝑛).
+$(1)$ Si en la lista de entrada no existe al menos una ocurrencia de cada elemento, al igual que en la solución por combinatoria el resultado es tomar un elemento por cada uno que aparece, y este es el mejor caso y se resuelve en 𝑂(𝑛).
 
 ```python
 def _minimum(arr): #O(n)
@@ -287,8 +287,117 @@ def _minimum(arr): #O(n)
     
     return min(dic.values())
 ```
-Sea $x$ la cantidad de veces que se repite el número que menos se repite de la lista de entrada, en el óptimo no puede existir ningún conjunto con cardinalidad mayor a $x + 1$. Esto sirve como cota para mejorar el algoritmo que será explicado más adelante.
+Sea $x$ la cantidad de veces que se repite el número que menos se repite de la lista de entrada, en la solución $S$ no puede existir ningún conjunto con cardinalidad mayor a $x + 1$. Esto sirve como cota para mejorar el algoritmo que será explicado más adelante.
 
-Sea $f_i, f_j$ la cantidad de veces que se repite los elementos $i, j$ en $S$, es decir la frecuencia de $i$ o $j$ en $S$. Como tenemos como restricción del problema que $|f_i - f_j| \le 1$ entonces si el mínimo es $x$ no puede existir en la solución un elemento que se repita $x + i$ veces tal que $i \ge 2$. 
+Sea $f_i, f_j$ la cantidad de veces que se repiten los elementos $i, j$ en $S$ con $1 \le i, j \le 8$, es decir la frecuencia de $i$ o $j$ en $S$. Como tenemos como restricción del problema que $|f_i - f_j| \le 1$, entonces si el mínimo es $x$ la máxima frecuencia que puede tener un elemento en $S$ es $x + 1$. Ya que si tenemos un elemento con frecuencia $f_i \gt x + 1$ como solo podemos tomar el elemento que menos se repite $x$ veces y sea su frecuencia $f_j = x$ entonces $|f_i - f_j| \gt 1$ y por tanto no se cumple la restricción del problema.
 
-- si el número que se repite $x$ veces se pone esa cantidad de veces en la solución, los restantes solo pueden repetirse exclusivamente $(x \land (x + 1))$ $\lor$ $(x \land (x - 1))$ veces
+- si el número que se repite $x$ veces se pone esa cantidad en la solución, los restantes solo pueden repetirse exclusivamente $x$ y $x+1$ o $x$ y $x-1$ veces.
+
+-  si el número que se repite $x$ veces se pone una cantidad menor en la solución, los restantes solo pueden repetirse exclusivamente $x - k$ y $x - k + 1$ o $x - k$ y $x - k - 1$ veces donde $x - k$ es el numero menor que 𝑥 que se repitió.
+
+- $(1)$ si el número no forma parte de la solución, al contar como frecuencia 0 ocurre exactamente lo mismo.
+
+Complejidad: $O(n)$
+
+Ahora se verá la utilidad de usar este valor:
+
+```python
+def _binary_search(A:str, left:int, right:int, permutation:list) -> int:
+    """Binary search for the optimal value of x"""
+    #O(log(n) * n)
+
+    max_length = 0
+    while left < right:
+        mid = (left + right) // 2
+
+        length = _variations(A, mid, permutation)   #O(n)
+
+        if length != -1:
+            left = mid + 1
+            max_length = max(max_length, length)
+        else:
+            right = mid
+    
+    return max_length
+```
+
+$(2)$ En el momento que se tenga fijada una permutación, hay que probar si se puede construir la subsecuencia máxima tal que todos los conjuntos de la solución tengan como cardinalidad mínima a $x$ y máxima a $x + 1$ (Esta corresponde a la misma 𝑥 que en el ejemplo anterior, y más adelante se explica cómo lograr esto), en caso de no existir solución válida para estos valores, hay que disminuir el valor de $x$ en 1 y volver a probar, esta sería una búsqueda común en un ciclo disminuyendo en 1 por cada iteración mientras la condición no se cumpla. Esta solución es $O(n * k)$ donde $k$ es el costo de obtener la máxima subsecuencia que se está buscando. 
+
+$(3)$  Una solución más interesante seria aplicar búsqueda binaria sobre este valor de $x$, ya que es la forma mas eficiente y es perfectamente adaptable a esta situación.
+
+<br>
+
+Demostración:
+
+En $(2)$ se realiza una búsqueda donde el primer valor es $x$ y en cada iteración este valor disminuye en 1.
+
+Sea $k : k \le x$ el primer valor donde se cumple la condición, este es el mejor para la permutación fijada ya que en los valores entre $k$ y $x$ no cumplían, y cualquier valor menor que $k$ empeoraría la solución.
+
+Esto es lo mismo que buscar cuál es el mayor valor que cumple con las restricciones del problema en el rango $[0, x]$ de aquí que se pueda aplicar búsqueda binaria para mejorar este proceso. Se utiliza el algoritmo clásico de búsqueda binaria de la siguiente forma:
+
+Sea $m$ el valor tomado como $mid$ en la búsqueda binaria
+
+- Si la subsecuencia es válida, se debe probar en el intervalo $[m + 1, r]$ y aumentar el valor de $m$ (el mid de este nuevo intervalo), ya que se busca el máximo valor tal que exista la subsecuencia $S$ que cumpla con las restricciones.
+
+- Si no podemos construir ninguna subsecuencia válida, tampoco se podrá con un valor mayor que $m$, entonces se debe probar en el intervalo $[l, m]$ y disminuir $m$ (el mid de este nuevo intervalo), ya que hay un valor menor para el cuál existe $S$. Para 0 siempre existe pues siempre puedo crear una secuencia válida tomando 1 vez cada elemento diferente que aparece en $A$. 
+
+La complejidad de esto es la complejidad de una búsqueda binaria $O(logn)$ 
+
+Luego de tener fijada una permutación y el valor mínimo hay que obtener para cada subconjunto de la solución cual es el valor máximo de cardinalidad que puede tener. 
+
+```python
+def _variations(A, mid, permutation):
+    global total
+    n = [mid, mid + 1]
+    m = [-1 for i in range(8)]
+    max = [-1]
+    _variationsWR(n,m,0, A, permutation, max)
+    return max[0]
+    
+def _variationsWR(n, m, pos, A, permutation, max):
+    """por cada forma de poner los elementos de n en m ejecuta el find"""
+    #O(2^8)
+    global total
+    if(pos == len(m)):
+        maxAct = _find(A, m, permutation)
+        if(maxAct > max[0]):
+            max[0] = maxAct
+        total +=1
+        if(total == 2**8):
+            total=0
+            return
+    else:
+        for i in range(len(n)):
+            m[pos] = n[i]
+            _variationsWR(n, m, pos + 1, A, permutation, max)
+```
+Esto se traduce a obtener todas las variaciones de $x, x + 1$ tal que $x$ es el mínimo en una lista de tamaño 8 (este tamaño se debe a que son siempre 8 subconjuntos da igual el orden en que aparezcan en la solucion) 
+
+```python
+def _find(A:str, m:list, permutation:list) -> int:
+    '''para cada elemento de m ver si se puede tomar esa cantidad de elementos en A dado la permutacion actual'''
+    # O(n)
+    curr = 0
+    count = 0
+    totl = 0
+    for i in range(len(A)):
+        if(int(A[i]) == permutation[curr]):
+            count +=1
+            if(count == m[curr]):
+                curr += 1
+                totl += count
+                if(curr == len(permutation) and count == m[curr-1]):
+                    return totl
+                count = 0
+    if(curr != len(permutation)):
+        return -1
+    return totl
+```
+
+Luego por cada una ver si a partir de la lista original, la permutación y la variación ver si se puede construir una subsecuencia que tome elementos de $A$, en el orden definido por la permutación y la cantidad dada por la variación para cada subconjunto.
+
+Luego de hacer esto para todas las posibles variaciones, la que cumpla las condiciones y su suma sea la mayor, es la mejor solucion para la permutación y valor de minimo  prefijados. Con la búsqueda binaria se obtiene esto para el mayor valor de frecuencia $x$ y tendríamos $S_p$ la subsecuencia más larga que cumple con las restricciones donde los elementos aparecen en el orden dado por la permutación $p$ con $1 \le p \le 8!$.
+
+El tamaño de la subsecuencia $S$ es el tamaño de la mayor subsecuencia $S_p$.
+
+
