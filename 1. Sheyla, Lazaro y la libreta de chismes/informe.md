@@ -431,3 +431,5 @@ La complejidad temporal de este algoritmo es:
 Por todo lo antes dicho el algoritmo es:
 
 $O(8! * logn * 2^8 * n) = O(n*logn)$
+
+Debido al gran tamaño de la constante de este algoritmo, el $naive$ ejecuta mucho mas rapido para listas hasta tamaño $n = 20$, de ahi en adelante ya el optimo es mucho mas eficiente.
