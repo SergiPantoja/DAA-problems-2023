@@ -54,7 +54,7 @@ Tenemos 4 condiciones que cumplir:
     [1, 1, 2, 2, 3, 3]
     ```
 
-Si cumplen estas 3 condiciones el problema está resuelto, en el caso de este ejemplo la solución es la última lista mostrada.
+Si cumplen estas 4 condiciones el problema está resuelto, en el caso de este ejemplo la solución es la última lista mostrada.
 
 <br>
 
@@ -66,7 +66,7 @@ La primera idea que se pensó fue resolver el problema por combinatoria, se  gen
 ### Subsecuencia máxima creciente:
 Luego se el problema fue modelado de forma tal que se resolviera usando el algoritmo de máxima subsecuencia creciente. La idea fue:
 
-Tomar la lista de entrada del problema (A partir de ahora esta lista se denotará como $L$) junto con sus índices:
+Tomar la lista de entrada del problema (A partir de ahora esta lista se denotará como $A$) junto con sus índices:
 
 ```python
 A = [1, 1, 3, 2, 3, 2, 1, 2]
@@ -82,7 +82,7 @@ Permutación (A partir de ahora esta lista se denotará como $P$) y los índices
 [0, 1, 6, 2, 4, 3, 5, 7]
 ```
 
-Al obtener esta lista de ¨índices¨ se garantiza que $\forall x,y \in I$ si $x < y$ significa que $x$ aparece antes que $y$ en $L$.
+Al obtener esta lista de ¨índices¨ se garantiza que $\forall x,y \in I$ si $x < y$ significa que $x$ aparece antes que $y$ en $A$.
 
 Por tanto si se obtiene la máxima subsecuencia creciente de $I$:
 
@@ -90,7 +90,7 @@ Por tanto si se obtiene la máxima subsecuencia creciente de $I$:
 [0, 1, 2, 3, 5, 7]
 ```
 
-se garantiza que si $x > y$, $x$ no va a aparecer antes que $y$ en la solución, la cual es una de las condiciones del ejercicio, además, como $I$ se obtuvo a partir de los cambios que llevaron de $L$ a $P$ y en este cada subconjunto de números está garantizado que $\forall x,y \in P : x = y$ , $x$ es consecutivo con $y$, en $I$ ocurre lo mismo y por ende una solución usando este algoritmo también cumpliría esta propiedad. Hasta este punto el problema podría ser resuelto en $O(n log n)$, pero no se encontró manera de mantener un tiempo similar a este añadiendo el cumplimiento de la restricción de la diferencia de las cardinalidades ya que esto implicaba tener que usar backtrack, por lo que esta solución fue descartada.
+se garantiza que si $x > y$, $x$ no va a aparecer antes que $y$ en la solución, la cual es una de las condiciones del ejercicio, además, como $I$ se obtuvo a partir de los cambios que llevaron de $A$ a $P$ y en este cada subconjunto de números está garantizado que $\forall x,y \in P : x = y$ , $x$ es consecutivo con $y$, en $I$ ocurre lo mismo y por ende una solución usando este algoritmo también cumpliría esta propiedad. Hasta este punto el problema podría ser resuelto en $O(n log n)$, pero no se encontró manera de mantener un tiempo similar a este añadiendo el cumplimiento de la restricción de la diferencia de las cardinalidades ya que esto implicaba tener que usar backtrack, por lo que esta solución fue descartada.
 
 ### Óptimo:
 
@@ -343,7 +343,7 @@ Sea $m$ el valor tomado como $mid$ en la búsqueda binaria
 
 La complejidad de esto es la complejidad de una búsqueda binaria $O(logn)$ 
 
-Luego de tener fijada una permutación y el valor mínimo hay que obtener para cada subconjunto de la solución cual es el valor máximo de cardinalidad que puede tener. 
+Luego de tener fijada una permutación y el valor mínimo hay que obtener para cada subconjunto de la solución cual es el valor máximo de cardinalidad que puede tener. Es decir cuál es la frecuencia máxima que puede tener cada elemento en $S$.
 
 ```python
 def _variations(A, mid, permutation):
